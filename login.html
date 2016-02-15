@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8">
+
+    <title>Login</title>
+
+    <!-- Imports ---------------------->
+    <!-- jQuery -->
+    <script src="js/jquery-1.11.1.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="js/bootstrap.js"></script>
+
+    <!-- Login -->
+    <script src="js/login.js"></script>
+
+    <!-- Bootstrap CSS -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+
+
+
+    <!-- Styles ---------------------->
+    <style type="text/css">
+        a {
+            / word-wrap: break-word;
+        }
+        .content {
+            width: 95%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        body {
+            background-color: #181818;
+        }
+        h1 {
+            color: #adafb2;
+        }
+        h4 {
+            display: block;
+            max-width: 70%;
+            margin-bottom: 5px;
+            overflow: hidden;
+        }
+        p {
+            color: #adafb2;
+        }
+        hr {
+            display: block;
+            height: 1px;
+            border: 0;
+            border-top: 1px solid #adafb2;
+            margin: 1em 0;
+            padding: 0;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container" style="margin:15px">
+
+        <div class="jumbotron" style="background-color:#282828; margin-top:20px">
+
+            <div id="login">
+                <h1 style="color:#adafb2">Log in to use DiscogsToSpotify</h1>
+                <p>Please log in using your Spotify account to export any public Discogs collection to a Spotify playlist.</p>
+                <img id="login" src="log_in-desktop-large.png" style="height:42px">
+            </div>
+
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h2>How it works</h2>
+                    <p>Both Discogs and Spotify offer a Web API for Third Party Applications like this one. After logging in with your Spotify account, you will be asked to provide a Discogs username. Using the Web APIs, we will query the public collection of the given user and try our best to match each release from the collection to an album on Spotify. The result will be stored for you inside a newly created playlist in your Spotify account.</p>
+                </div>
+                <div class="col-md-4">
+                    <h2>Privacy</h2>
+                    <p>DiscogsToSpotify is written completely in Client-side JavaScript, meaning it will run locally on your own machine. We will not store data of any kind about you. The only information we request from your Spotify account is where you come from, because not every release on Spotify is available for users in every country.</p>
+                </div>
+                <div class="col-md-4">
+                    <h2>About the Dev</h2>
+                    <p>I'm Krispin, a German Developer and huge fan of Punk, Metal and Ska. I have been collecting records on vinyl for about three years now, and I keep track of my collection on Discogs. I also like to listen to my music on the go, so I thought it would be really cool if you could export your Discogs collection to a streaming service like Spotify. That's why I started developing DiscogsToSpotify.</p>
+                    <p>If you experience any trouble with this Application, please do not hesitate to contact me at
+                        <a href="mailto:bla@blub.com">bla@blub.com</a>.</p>
+                    <p>You can also check out my other projects on <a href="https://github.com/lim93/">GitHub</a>.
+                    </p>
+
+                </div>
+            </div>
+
+            <hr>
+
+            <footer>
+                <p>Developed by <a href="https://github.com/lim93/">lim93</a> in 2016</p>
+            </footer>
+        </div>
+
+
+    </div>
+
+
+
+</body>
+
+</html>

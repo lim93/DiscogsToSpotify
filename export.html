@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8">
+
+    <title>DiscogsToSpotify</title>
+
+    <!-- Imports ---------------------->
+    <!-- jQuery -->
+    <script src="js/jquery-1.11.1.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="js/bootstrap.js"></script>
+
+    <!-- Export -->
+    <script src="js/export.js"></script>
+
+    <!-- Bootstrap CSS -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+
+
+
+    <!-- Styles ---------------------->
+    <style type="text/css">
+        a {
+            / word-wrap: break-word;
+        }
+        .content {
+            width: 95%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        body {
+            background-color: #181818;
+        }
+        h1 {
+            color: #adafb2;
+        }
+        h4 {
+            display: block;
+            max-width: 70%;
+            margin-bottom: 5px;
+            overflow: hidden;
+        }
+        p {
+            color: #adafb2;
+        }
+        btn-default {
+            background-color: #1db954;
+        }
+        myModal {}
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container" style="margin:15px">
+
+        <div class="jumbotron" style="background-color:#282828; margin-top:20px">
+
+            <div id="export">
+                <h1 style="color:#adafb2">Export your Discogs Collection to a Spotify playlist</h1>
+
+                <div id="login">
+                    <p>Nicht eingeloggt</p>
+                </div>
+
+                <div id="loggedin"></div>
+
+                <div>
+
+                    <input style="width: 250px; max-width: 100%; float:left; margin-right:10px" name="user" id="user" type="text" class="form-control" placeholder="Discogs-Username" />
+
+                    <img id="start" src="create-playlist-green.png" style="height:34px; margin-bottom:20px">
+
+                    <!--<div class="progress">
+                <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                </div>
+            </div>-->
+                </div>
+            </div>
+
+        </div>
+
+
+
+
+
+
+        <div>
+
+
+
+
+            <div id="matchDiv" style="display: inline-block;"></div>
+
+
+        </div>
+
+    </div>
+
+
+
+
+
+
+    <!-- Modal: Playlist created -->
+
+    <div id="playlistCreated" class="modal fade myModal">
+
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h4 class="modal-title">Playlist created</h4>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <p id="playlistCreatedText"></p>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button id="beginExportButton" class="btn btn-large btn-primary" data-toggle="modal" data-target="#playlistCreated">Fill with tracks!</button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Modal: X Releases added -->
+    <div id="releasesAdded" class="modal fade myModal">
+
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h4 class="modal-title">Tracks added to your playlist</h4>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <p id="releasesAddedText"></p>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button id="okButton" class="btn btn-large btn-primary" data-toggle="modal" data-target="#releasesAdded">Ok</button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Modal: No match -->
+    <div id="noMatch" class="modal fade myModal">
+
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h4 class="modal-title">No match on Spotify</h4>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <p id="noMatchText">Unfortunately, the Spotify Search API didn't return any results for some of the releases in your Discogs collection. This might happen because the artist doesn't want his songs on Spotify, or the release is unavailable in your country. It is also possible that a release has different titles on Discogs and Spotify, so maybe a manual search in your Spotify App will get you the correct result for the following releases:</p>
+
+                    <div id="noMatchDiv"></div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button id="closeButton" class="btn btn-large btn-primary" data-toggle="modal" data-target="#noMatch">Close</button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Modal: Coose best match -->
+
+    <div id="bestMatch" class="modal fade myModal">
+
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+
+                <div class="modal-header" id="bestMatchHeader">
+
+                    <h4 class="modal-title">Choose the best match</h4>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <p>We found more than one possible match on Spotify. Please choose from the list below:</p>
+
+                    <div id="matchfinder">
+
+                        <div id="spotifyDiv">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button id="noMatchButton" class="btn btn-large btn-primary" data-toggle="modal" data-target="#bestMatch" onClick="exportMultipleMatches()">None of the above</button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+
+
+</body>
+
+</html>
