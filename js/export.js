@@ -4,6 +4,7 @@ $(document).ready(function () {
     access_token = params.access_token;
 
 
+    // Check login state and set userID, country and userName
     if (access_token) {
         $.ajax({
             url: 'https://api.spotify.com/v1/me',
@@ -42,7 +43,10 @@ $(document).ready(function () {
 
         userNameDiscogs = $('#user').val();
 
-        getCollection(userNameDiscogs, 1);
+        $('#progressDiv').removeClass('hide');
+
+
+        setTimeout(getCollection, 10, userNameDiscogs, 1);
 
 
     });
@@ -52,22 +56,25 @@ $(document).ready(function () {
     });
 
 
-    // BeginExport-Button
+    // Start exporting after user got informaed about the new playlist
     $('#playlistCreated').on('hidden.bs.modal', function (e) {
         exportToSpotify();
     })
 
-    // BeginExport-Button
+    // Make the user choose the right release
     $('#releasesAdded').on('hidden.bs.modal', function (e) {
         exportMultipleMatches();
     })
 
+    // Create Playlist
+    $('#collectionFetched').on('hidden.bs.modal', function (e) {
+        createPlaylist();
+    })
 
-
-    // var progress = (addedCount / totalReleases) * 100;
-
-    // $('.progress-bar').css('width', progress + '%').attr('aria-valuenow', progress);
-
+    // Set the progress bar to 100% in the end
+    $('#noMatch').on('hidden.bs.modal', function (e) {
+        updateProgressBar(100);
+    })
 
 
 });
@@ -102,29 +109,26 @@ var withoutMatches = [];
 //Count of all releases added to the Playlist
 var addedCount = 0;
 
+//How many releases are in the user's collection?
 var totalReleases = 0;
 
+//How many artists have already been saved?
+var adedArtistCount = 0;
 
+//How many artists are in the user's collection in total?
+var totalArtists = 0;
 
 
 function releaseObject(title, artistName, year) {
     this.title = title;
     this.artistName = artistName;
     this.year = year;
-    this.image = null;
-    this.spotifyId = null;
 }
 
 function artist(name, releases) {
     this.name = name;
     this.releases = releases;
 }
-
-function playlist(name, public) {
-    this.name = name;
-    this.public = public;
-}
-
 
 function multipleMatch(release, matches) {
     this.reslease = release;
@@ -133,39 +137,45 @@ function multipleMatch(release, matches) {
 
 
 
-//We don't want duplicate artists in the global array, so this method checks if the array contains the given artist (by name) and returns either the position in the array or -1. 
+/** We don't want duplicate artists in the global array, so this method checks 
+if the array contains the given artist (by name) and returns either the position 
+in the array or -1. */
 function artistsContainsName(name) {
 
     for (var i = 0; i < globalArtists.length; i++) {
         if (globalArtists[i].name === name) {
             return i;
         }
-
     }
-
     return -1;
 }
 
-//We don't want duplicate releases per artist (user could own
-//more than one copy of a release, e.g. CD and vinyl)
+/** We don't want duplicate releases per artist (user could own
+more than one copy of a release, e.g. CD and vinyl) */
 function releasesContainsTitle(releases, title) {
 
     for (var i = 0; i < releases.length; i++) {
         if (releases[i].title === title) {
             return true;
         }
-
     }
-
     return false;
+}
 
+/** Update the progressbar to the given number in percent */
+function updateProgressBar(percent) {
+
+    percent = Math.round(percent);
+
+    $('.progress-bar').css('width', percent + '%').attr('aria-valuenow', percent);
+    $('#progressNumber').html(percent + '%');
 }
 
 
 
 
 
-
+/** Entry point. Fetches the user's collection from Discogs */
 function getCollection(userName, page) {
 
     var folderId = 0;
@@ -173,12 +183,9 @@ function getCollection(userName, page) {
     $.ajax({
         url: 'https://api.discogs.com/users/' + userName + '/collection/folders/' + folderId + '/releases?page=' + page,
         type: "GET",
-        beforeSend: function (xhr) {
-            //xhr.setRequestHeader('User-Agent', 'DiscogsToSpotify');
-        },
         success: function (result) {
 
-            mapArtistsAndReleases(result);
+            addArtistsAndReleases(result);
 
             //next page
             if (result.pagination.page < result.pagination.pages) {
@@ -188,29 +195,30 @@ function getCollection(userName, page) {
 
             } else {
 
-                createPlaylist();
+                updateProgressBar(15);
 
+                $('#collectionFetchedText').append("We fetched a total of " + totalReleases + " releases from your Discogs collection.");
+                $("#collectionFetched").modal('show');
             }
-
-
 
         },
         error: function (xhr, data) {
 
             if (xhr.status == 404) {
-                alert("Unknown Username. Discogs API returned 404.");
+                $('#errorModalText').html("<p>Unknown Discogs username. Please try again.</p>");
+                $("#errorModal").modal('show');
             } else {
-                alert("Error: HTTP " + xhr.status);
+                $('#errorModalText').html("<p>Something went wrong: " + xhr.status + ". Please try again.</p>");
+                $("#errorModal").modal('show');
             }
-
-
         }
     });
 
 
 }
 
-function mapArtistsAndReleases(result) {
+/** Takes the result from Discogs and adds each artist and their releases to the global array (No duplicates!) */
+function addArtistsAndReleases(result) {
 
     $.each(result.releases, function (pos, release) {
 
@@ -239,14 +247,15 @@ function mapArtistsAndReleases(result) {
             //Create new artist with new release-array and add artist to the global array      
             globalArtists.push(new artist(releaseArtistName, new Array(thisRelease)));
             totalReleases++;
+            totalArtists++;
 
         }
 
     });
-
-
 }
 
+
+/** Creates a new playlist in the user's Spotify account, using the Discogs username */
 function createPlaylist() {
 
     var name = userNameDiscogs + "'s Discogs Collection";
@@ -267,6 +276,8 @@ function createPlaylist() {
         success: function (result) {
             playlistID = result.id;
 
+            updateProgressBar(20);
+
             var playListCreatedText = "New empty playlist '" + name + "' created in your Spotify account.";
             $('#playlistCreatedText').html(playListCreatedText);
 
@@ -284,10 +295,13 @@ function createPlaylist() {
 
 
 
-
+/** Gets the next artist from the global array and exports the artist's releases to Spotify */
 function exportToSpotify() {
 
-    $.each(globalArtists, function (pos, artist) {
+    if (globalArtists.length > 0) {
+
+        var artist = globalArtists[0];
+        globalArtists.splice(0, 1);
 
         var releases = artist.releases;
 
@@ -297,20 +311,42 @@ function exportToSpotify() {
 
         });
 
-    });
+        adedArtistCount++;
 
-    $('#releasesAddedText').append(addedCount + " releases were already added to your Spotify playlist automatically. ");
+        //Update Progress AND export next artist
+        updateProgress();
 
-    if (multipleMatches.length > 0) {
-        $('#releasesAddedText').append("For the following " + multipleMatches.length + " releases, we will need a little help from you.");
+    } else {
+
+        $('#releasesAddedText').append(addedCount + " releases were already added to your Spotify playlist automatically. ");
+
+        if (multipleMatches.length > 0) {
+            $('#releasesAddedText').append("For the following " + multipleMatches.length + " releases, we will need a little help from you.");
+        }
+
+        $("#releasesAdded").modal('show');
+
     }
 
-    $("#releasesAdded").modal('show');
+}
+
+/** Helper function that calculates the progress based on the number of already exported artists and then 
+ * sets a timeout until the next *artist gets exported. This leaves time for the browser to display the updated
+ * progress bar and the cover images */
+function updateProgress() {
+
+    //Progress bar is at 20% before the first artist is exported and should be at 70% after the last one
+    var progress = ((adedArtistCount / totalArtists) * 100 / 2) + 20;
+    updateProgressBar(progress);
+
+    // next artist
+    setTimeout(exportToSpotify, 100);
 
 }
 
 
-
+/** If there are releases with multiple possible matches, we display a modal to make the user decide 
+ * which is the right one */
 function exportMultipleMatches() {
 
     if (multipleMatches.length > 0) {
@@ -328,7 +364,6 @@ function exportMultipleMatches() {
 
         var matches = match.matches;
 
-
         $.each(matches, function (pos, album) {
 
             var name = album.name;
@@ -339,15 +374,17 @@ function exportMultipleMatches() {
 
         });
 
-
         $("#bestMatch").modal('show');
 
     } else {
+        updateProgressBar(90);
         showNoMatch();
     }
 
 }
 
+
+/** Reacts to the button in the modal and saves the chosen release to the playlist */
 function saveAlbumFromMulti(idAndURL) {
 
     $("#bestMatch").modal('hide');
@@ -357,10 +394,12 @@ function saveAlbumFromMulti(idAndURL) {
 
     saveAlbumToPlaylist(seperated[0], seperated[1]);
 
+    //Next
     exportMultipleMatches();
 }
 
 
+/** Displays the modal with all releases without a match on Spotify */
 function showNoMatch() {
 
     if (withoutMatches.length > 0) {
@@ -374,19 +413,14 @@ function showNoMatch() {
 
         $('#noMatchDiv').append("</ul>");
 
-
         $("#noMatch").modal('show');
 
-
     }
-
 
 }
 
 
-
-
-
+/** Start a search on Spotify and handle the result */
 function searchReleaseOnSpotify(release) {
 
     var query = 'album:' + release.title + ' artist:' + release.artistName;
@@ -404,12 +438,12 @@ function searchReleaseOnSpotify(release) {
         type: "GET",
         success: function (result) {
 
-            //alert('Searched Spotify for ' + release.title);
             handleResultFromSpotify(result, release);
         },
         error: function (request, xhr, data) {
 
-            //Todo           
+            $('#errorModalText').html("<p>Something went wrong: " + xhr.status + ". Please try again.</p>");
+            $("#errorModal").modal('show');
 
         },
         async: false
@@ -417,11 +451,12 @@ function searchReleaseOnSpotify(release) {
 }
 
 
+/** Decides if any album from the Spotify-result is a perfect match for the given release,
+ * or if the user has to choose the right one manually */
 function handleResultFromSpotify(result, release) {
 
     //Possible matches
     var items = result.albums.items;
-
 
     //nothing found
     if (items.length === 0) {
@@ -431,12 +466,10 @@ function handleResultFromSpotify(result, release) {
 
     var done = false;
 
-
     //Loop to find exact matches
     $.each(items, function (pos, album) {
 
         var name = album.name;
-
 
         //exact match 
         if (!done && name.toLowerCase() === release.title.toLowerCase()) {
@@ -452,8 +485,21 @@ function handleResultFromSpotify(result, release) {
         }
     });
 
+    //One and only match - hope it's the right one
+    if (!done && items.length === 1) {
 
-    //More than one possible match
+        done = true;
+        var album = items[0];
+
+        var albumID = album.id;
+        var imageURL = album.images[0].url;
+
+        saveAlbumToPlaylist(albumID, imageURL);
+
+        return;
+    }
+
+    //More than one possible match - let the user decide
     if (!done && items.length > 1) {
 
         var m = new multipleMatch(release, items);
@@ -463,39 +509,9 @@ function handleResultFromSpotify(result, release) {
         return;
     }
 
-
-
-    //            //one and only match
-    //            if (items.length === 1) {
-    //    
-    //                var name = items[0].name;
-    //                var nameTLC = name.toLowerCase();
-    //    
-    //                if (nameTLC.indexOf("version") > -1) {
-    //                    $('#matchDiv').append('<li>One And Only: ' + name + '</li>');
-    //                    return;
-    //                }
-    //    
-    //                if (nameTLC.indexOf("delux") > -1) {
-    //                    $('#matchDiv').append('<li>One And Only: ' + name + '</li>');
-    //                    return;
-    //                }
-    //    
-    //    
-    //                if (nameTLC.indexOf("edition") > -1) {
-    //                    $('#matchDiv').append('<li>One And Only: ' + name + '</li>');
-    //                    return;
-    //                }
-    //    
-    //    
-    //                $('#unclearDiv').append('<li>Might be: ' + name + '</li>');
-    //                return;
-    //            }
-
-
 }
 
-
+/** Gets an album's tracks and has them saved to the playlist. Adds the cover to the site */
 function saveAlbumToPlaylist(albumID, imageURL) {
 
     return $.ajax({
@@ -509,8 +525,11 @@ function saveAlbumToPlaylist(albumID, imageURL) {
         type: "GET",
         success: function (result) {
 
-            addImage(imageURL, $('#matchDiv'));
             saveAlbumTracks(result);
+
+            $('<img src="' + imageURL + '">').load(function () {
+                $(this).width('15%').css("margin", "2.5%").appendTo($('#matchDiv'));
+            });
 
         },
         error: function (request, xhr, data) {
@@ -519,13 +538,10 @@ function saveAlbumToPlaylist(albumID, imageURL) {
         async: false
     });
 
-
-
-
-
-
 }
 
+
+/** Saves tracks to the playlist */
 function saveAlbumTracks(tracks) {
 
     var spotifyURIs = [];
@@ -559,19 +575,7 @@ function saveAlbumTracks(tracks) {
 }
 
 
-function addImage(imageURL, element) {
-
-    $('<img src="' + imageURL + '">').load(function () {
-        $(this).width('15%').css("margin", "2.5%").appendTo(element);
-    });
-
-}
-
-
-/**
- * Obtains parameters from the hash of the URL
- * @return Object
- */
+/** Gets parameters from the hash of the URL */
 function getHashParams() {
     var hashParams = {};
     var e, r = /([^&;=]+)=?([^&;]*)/g,
