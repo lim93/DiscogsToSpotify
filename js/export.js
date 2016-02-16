@@ -227,7 +227,11 @@ function addArtistsAndReleases(result) {
         var releaseArtists = release.basic_information.artists;
         var releaseArtistName = releaseArtists[0].name;
 
-        var thisRelease = new releaseObject(releaseTitle, releaseArtistName, releaseYear);
+        //Some artists on Discogs have a number in closing round parenthesis behing their name. We don't want these.
+        var splitName = releaseArtistName.split(/([(]\d+[)].*)/);
+        var artistName = splitName[0];
+
+        var thisRelease = new releaseObject(releaseTitle, artistName, releaseYear);
 
         var positionInGlobalArray = artistsContainsName(releaseArtistName);
 
@@ -423,7 +427,7 @@ function showNoMatch() {
 /** Start a search on Spotify and handle the result */
 function searchReleaseOnSpotify(release) {
 
-    var query = 'album:' + release.title + ' artist:' + release.artistName;
+    var query = 'album:"' + release.title + '" artist:"' + release.artistName + '"';
 
     $.ajax({
         url: 'https://api.spotify.com/v1/search',
