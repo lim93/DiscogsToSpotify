@@ -35,17 +35,23 @@ $(document).ready(function () {
     // Start-Button
     $("#start").click(function () {
 
-        //New instance every time the start-button is clicked 
-        globalArtists = new Array();
-        loopCounter = 0;
-
-        //TODO Reset everything
+        //Reset some of the global values when the start-button is clicked 
+        globalArtists = [];
+        playlistID = null;
+        multipleMatches = [];
+        withoutMatches = [];
+        addedCount = 0;
+        totalReleases = 0;
+        adedArtistCount = 0;
+        totalArtists = 0;
 
         userNameDiscogs = $('#user').val();
 
+        $('#imageDiv').empty();
         $('#progressDiv').removeClass('hide');
+        updateProgressBar(0);
 
-
+        //Start after a timeout so the Browser gets time to display the changes
         setTimeout(getCollection, 10, userNameDiscogs, 1);
 
 
@@ -197,7 +203,7 @@ function getCollection(userName, page) {
 
                 updateProgressBar(15);
 
-                $('#collectionFetchedText').append("We fetched a total of " + totalReleases + " releases from your Discogs collection.");
+                $('#collectionFetchedText').html("We fetched a total of " + totalReleases + " releases from your Discogs collection.");
                 $("#collectionFetched").modal('show');
             }
 
@@ -208,7 +214,7 @@ function getCollection(userName, page) {
                 $('#errorModalText').html("<p>Unknown Discogs username. Please try again.</p>");
                 $("#errorModal").modal('show');
             } else {
-                $('#errorModalText').html("<p>Something went wrong: " + xhr.status + ". Please try again.</p>");
+                $('#errorModalText').html("<p>Something went wrong while fetching your collection: " + xhr.status + ". Please try again.</p>");
                 $("#errorModal").modal('show');
             }
         }
@@ -290,7 +296,8 @@ function createPlaylist() {
         },
         error: function (request, xhr, data) {
 
-            alert("Error: HTTP " + xhr.status);
+            $('#errorModalText').html("<p>Something went wrong while creating a Spotify playlist: " + xhr.status + ". Please try again.</p>");
+            $("#errorModal").modal('show');
 
         }
     });
@@ -322,6 +329,7 @@ function exportToSpotify() {
 
     } else {
 
+        $('#releasesAddedText').empty();
         $('#releasesAddedText').append(addedCount + " releases were already added to your Spotify playlist automatically. ");
 
         if (multipleMatches.length > 0) {
@@ -406,6 +414,8 @@ function saveAlbumFromMulti(idAndURL) {
 /** Displays the modal with all releases without a match on Spotify */
 function showNoMatch() {
 
+    $('#noMatchDiv').empty();
+
     if (withoutMatches.length > 0) {
 
         $('#noMatchDiv').append("<ul>");
@@ -446,7 +456,7 @@ function searchReleaseOnSpotify(release) {
         },
         error: function (request, xhr, data) {
 
-            $('#errorModalText').html("<p>Something went wrong: " + xhr.status + ". Please try again.</p>");
+            $('#errorModalText').html("<p>Something went wrong while searching on Spotify: " + xhr.status + ". Please try again.</p>");
             $("#errorModal").modal('show');
 
         },
@@ -532,12 +542,13 @@ function saveAlbumToPlaylist(albumID, imageURL) {
             saveAlbumTracks(result);
 
             $('<img src="' + imageURL + '">').load(function () {
-                $(this).width('15%').css("margin", "2.5%").appendTo($('#matchDiv'));
+                $(this).width('15%').css("margin", "2.5%").appendTo($('#imageDiv'));
             });
 
         },
         error: function (request, xhr, data) {
-            alert("error");
+            $('#errorModalText').html("<p>Something went wrong while getting the album tracks: " + xhr.status + ". Please try again.</p>");
+            $("#errorModal").modal('show');
         },
         async: false
     });
@@ -571,7 +582,8 @@ function saveAlbumTracks(tracks) {
         },
         error: function (request, xhr, data) {
 
-            alert("Error: HTTP " + xhr.status);
+            $('#errorModalText').html("<p>Something went wrong while saving the tracks to your playlist: " + xhr.status + ". Please try again.</p>");
+            $("#errorModal").modal('show');
 
         },
         async: false
