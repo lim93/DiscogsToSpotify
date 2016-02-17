@@ -31,6 +31,9 @@ $(document).ready(function () {
     }
 
 
+    //TODO: Grammar
+    //TODO: Design Modals
+    //TODO: "None of the above"
 
     // Start-Button
     $("#start").click(function () {
