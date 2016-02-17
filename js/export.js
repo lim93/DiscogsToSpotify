@@ -3,6 +3,8 @@ $(document).ready(function () {
     var params = getHashParams();
     access_token = params.access_token;
 
+    //Set to false on page load in case the previous export didn't finish
+    exportActive = false;
 
     // Check login state and set userID, country and userName
     if (access_token) {
@@ -30,13 +32,15 @@ $(document).ready(function () {
         window.location = "/login.html";
     }
 
-
-    //TODO: Grammar
-    //TODO: Design Modals
     //TODO: "None of the above"
 
     // Start-Button
     $("#start").click(function () {
+
+        //Prevent starting the export twice
+        if (exportActive == true) {
+            return;
+        } else(exportActive = true);
 
         //Reset some of the global values when the start-button is clicked 
         globalArtists = [];
@@ -68,25 +72,33 @@ $(document).ready(function () {
     // Start exporting after user got informaed about the new playlist
     $('#playlistCreated').on('hidden.bs.modal', function (e) {
         exportToSpotify();
-    })
+    });
 
     // Make the user choose the right release
     $('#releasesAdded').on('hidden.bs.modal', function (e) {
         exportMultipleMatches();
-    })
+    });
+
+    // And again after the modal has been hidden
+    $('#bestMatch').on('hidden.bs.modal', function (e) {
+        exportMultipleMatches();
+    });
 
     // Create Playlist
     $('#collectionFetched').on('hidden.bs.modal', function (e) {
         createPlaylist();
-    })
+    });
 
     // Set the progress bar to 100% in the end
     $('#noMatch').on('hidden.bs.modal', function (e) {
         updateProgressBar(100);
-    })
+    });
 
 
 });
+
+//Currently active export?
+var exportActive = false;
 
 //Global access_token for Spotify
 var access_token;
@@ -140,7 +152,7 @@ function artist(name, releases) {
 }
 
 function multipleMatch(release, matches) {
-    this.reslease = release;
+    this.release = release;
     this.matches = matches;
 }
 
@@ -181,9 +193,6 @@ function updateProgressBar(percent) {
 }
 
 
-
-
-
 /** Entry point. Fetches the user's collection from Discogs */
 function getCollection(userName, page) {
 
@@ -214,10 +223,10 @@ function getCollection(userName, page) {
         error: function (xhr, data) {
 
             if (xhr.status == 404) {
-                $('#errorModalText').html("<p>Unknown Discogs username. Please try again.</p>");
+                $('#errorModalText').html("Unknown Discogs username. Please try again.");
                 $("#errorModal").modal('show');
             } else {
-                $('#errorModalText').html("<p>Something went wrong while fetching your collection: " + xhr.status + ". Please try again.</p>");
+                $('#errorModalText').html("Something went wrong while fetching your collection: " + xhr.status + ". Please try again.");
                 $("#errorModal").modal('show');
             }
         }
@@ -271,7 +280,13 @@ function addArtistsAndReleases(result) {
 /** Creates a new playlist in the user's Spotify account, using the Discogs username */
 function createPlaylist() {
 
-    var name = userNameDiscogs + "'s Discogs Collection";
+    var name;
+
+    if (userNameDiscogs.match(/s$/) == 's') {
+        name = userNameDiscogs + "' Discogs Collection";
+    } else {
+        name = userNameDiscogs + "'s Discogs Collection";
+    }
 
     $.ajax({
         url: 'https://api.spotify.com/v1/users/' + userID + '/playlists',
@@ -291,7 +306,7 @@ function createPlaylist() {
 
             updateProgressBar(20);
 
-            var playListCreatedText = "New empty playlist '" + name + "' created in your Spotify account.";
+            var playListCreatedText = 'New empty playlist "' + name + '" created in your Spotify account.';
             $('#playlistCreatedText').html(playListCreatedText);
 
             $("#playlistCreated").modal('show');
@@ -299,7 +314,7 @@ function createPlaylist() {
         },
         error: function (request, xhr, data) {
 
-            $('#errorModalText').html("<p>Something went wrong while creating a Spotify playlist: " + xhr.status + ". Please try again.</p>");
+            $('#errorModalText').html("Something went wrong while creating a Spotify playlist: " + xhr.status + ". Please try again.");
             $("#errorModal").modal('show');
 
         }
@@ -335,7 +350,9 @@ function exportToSpotify() {
         $('#releasesAddedText').empty();
         $('#releasesAddedText').append(addedCount + " releases were already added to your Spotify playlist automatically. ");
 
-        if (multipleMatches.length > 0) {
+        if (multipleMatches.length === 1) {
+            $('#releasesAddedText').append("For the next release, we will need a little help from you.");
+        } else if (multipleMatches.length >= 1) {
             $('#releasesAddedText').append("For the following " + multipleMatches.length + " releases, we will need a little help from you.");
         }
 
@@ -344,6 +361,7 @@ function exportToSpotify() {
     }
 
 }
+
 
 /** Helper function that calculates the progress based on the number of already exported artists and then 
  * sets a timeout until the next *artist gets exported. This leaves time for the browser to display the updated
@@ -373,9 +391,11 @@ function exportMultipleMatches() {
         $('#bestMatchHeader').empty();
         $('#spotifyDiv').empty();
 
-        var release = match.reslease;
+        var release = match.release;
+        var yearString = (release.year != 0) ? " (" + release.year + ")" : "";
 
-        $('#bestMatchHeader').html("<h4 class='modal-title'>Choose the best match for <b>" + release.title + "</b> by " + release.artistName + " (" + release.year + ")" + "</h4>");
+
+        $('#bestMatchHeader').html("<h4 class='modal-title'>Choose the best match for <b>" + release.title + "</b> by " + release.artistName + yearString + "</h4>");
 
         var matches = match.matches;
 
@@ -385,7 +405,7 @@ function exportMultipleMatches() {
             var albumID = album.id;
             var imageURL = album.images[0].url;
 
-            $('#spotifyDiv').append('<div><img src="' + imageURL + '" width="20%" style="display:inline-block; margin:10px; vertical-align:top"><div style="display:inline-block; width:70%"><h4>' + album.name + '</h4><button id="' + albumID + ' ' + imageURL + '" type="button" class="btn btn-default" onClick = "saveAlbumFromMulti(this.id)">Choose this</button></div></div>');
+            $('#spotifyDiv').append('<div><img src="' + imageURL + '" width="20%" style="display:inline-block; margin:10px; vertical-align:top"><div style="display:inline-block; width:70%"><h4>' + album.name + '</h4><button id="' + albumID + ' ' + imageURL + '" type="button" class="btn btn-success" style="background-color:#648f00" onClick = "saveAlbumFromMulti(this.id)">Choose this</button></div></div>');
 
         });
 
@@ -403,18 +423,15 @@ function exportMultipleMatches() {
 function saveAlbumFromMulti(idAndURL) {
 
     $("#bestMatch").modal('hide');
-    $('.modal-backdrop').remove();
 
     var seperated = idAndURL.split(" ");
 
     saveAlbumToPlaylist(seperated[0], seperated[1]);
 
-    //Next
-    exportMultipleMatches();
 }
 
 
-/** Displays the modal with all releases without a match on Spotify */
+/** Displays the modal with all releases without a match on Spotify. End of the export. */
 function showNoMatch() {
 
     $('#noMatchDiv').empty();
@@ -431,6 +448,7 @@ function showNoMatch() {
         $('#noMatchDiv').append("</ul>");
 
         $("#noMatch").modal('show');
+        exportActive = false;
 
     }
 
@@ -459,7 +477,7 @@ function searchReleaseOnSpotify(release) {
         },
         error: function (request, xhr, data) {
 
-            $('#errorModalText').html("<p>Something went wrong while searching on Spotify: " + xhr.status + ". Please try again.</p>");
+            $('#errorModalText').html("Something went wrong while searching on Spotify: " + xhr.status + ". Please try again.");
             $("#errorModal").modal('show');
 
         },
@@ -550,7 +568,7 @@ function saveAlbumToPlaylist(albumID, imageURL) {
 
         },
         error: function (request, xhr, data) {
-            $('#errorModalText').html("<p>Something went wrong while getting the album tracks: " + xhr.status + ". Please try again.</p>");
+            $('#errorModalText').html("Something went wrong while getting the album tracks: " + xhr.status + ". Please try again.");
             $("#errorModal").modal('show');
         },
         async: false
@@ -585,7 +603,7 @@ function saveAlbumTracks(tracks) {
         },
         error: function (request, xhr, data) {
 
-            $('#errorModalText').html("<p>Something went wrong while saving the tracks to your playlist: " + xhr.status + ". Please try again.</p>");
+            $('#errorModalText').html("Something went wrong while saving the tracks to your playlist: " + xhr.status + ". Please try again.");
             $("#errorModal").modal('show');
 
         },

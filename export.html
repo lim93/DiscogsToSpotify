@@ -25,11 +25,6 @@
         a {
             / word-wrap: break-word;
         }
-        .content {
-            width: 95%;
-            margin-left: auto;
-            margin-right: auto;
-        }
         body {
             background-color: #181818;
         }
@@ -38,15 +33,11 @@
         }
         h4 {
             display: block;
-            max-width: 70%;
             margin-bottom: 5px;
             overflow: hidden;
         }
         p {
             color: #adafb2;
-        }
-        btn-default {
-            background-color: #1db954;
         }
         myModal {}
     </style>
@@ -63,7 +54,7 @@
                 <h1 style="color:#adafb2">Export your Discogs Collection to a Spotify playlist</h1>
 
                 <div id="login">
-                    <p>Nicht eingeloggt</p>
+                    <p>Logged out</p>
                 </div>
 
                 <div id="loggedin"></div>
@@ -105,7 +96,7 @@
                     <h4 class="modal-title">Error</h4>
                 </div>
                 <div class="modal-body">
-                    <p id="errorModalText"></p>
+                    <p id="errorModalText" style="color:black"></p>
                 </div>
                 <div class="modal-footer">
                     <button id="errorOKButton" class="btn btn-large btn-danger" data-toggle="modal" data-target="#errorModal">OK</button>
@@ -122,10 +113,10 @@
                     <h4 class="modal-title">Collection fetched</h4>
                 </div>
                 <div class="modal-body">
-                    <p id="collectionFetchedText"></p>
+                    <p id="collectionFetchedText" style="color:black"></p>
                 </div>
                 <div class="modal-footer">
-                    <button id="collectionFetchedButton" class="btn btn-large btn-primary" data-toggle="modal" data-target="#collectionFetched">Create Playlist!</button>
+                    <button id="collectionFetchedButton" class="btn btn-large btn-success" style="background-color:#648f00" data-toggle="modal" data-target="#collectionFetched">Create Playlist!</button>
                 </div>
             </div>
         </div>
@@ -140,10 +131,10 @@
                     <h4 class="modal-title">Playlist created</h4>
                 </div>
                 <div class="modal-body">
-                    <p id="playlistCreatedText"></p>
+                    <p id="playlistCreatedText" style="color:black"></p>
                 </div>
                 <div class="modal-footer">
-                    <button id="beginExportButton" class="btn btn-large btn-primary" data-toggle="modal" data-target="#playlistCreated">Fill with tracks!</button>
+                    <button id="beginExportButton" class="btn btn-large btn-success" style="background-color:#648f00" data-toggle="modal" data-target="#playlistCreated">Fill with tracks!</button>
                 </div>
             </div>
         </div>
@@ -159,10 +150,10 @@
                     <h4 class="modal-title">Tracks added to your playlist</h4>
                 </div>
                 <div class="modal-body">
-                    <p id="releasesAddedText"></p>
+                    <p id="releasesAddedText" style="color:black"></p>
                 </div>
                 <div class="modal-footer">
-                    <button id="okButton" class="btn btn-large btn-primary" data-toggle="modal" data-target="#releasesAdded">Ok</button>
+                    <button id="okButton" class="btn btn-large btn-success" style="background-color:#648f00" data-toggle="modal" data-target="#releasesAdded">Ok</button>
                 </div>
             </div>
         </div>
@@ -177,11 +168,11 @@
                     <h4 class="modal-title">No match on Spotify</h4>
                 </div>
                 <div class="modal-body">
-                    <p id="noMatchText">Unfortunately, the Spotify Search API didn't return any results for some of the releases in your Discogs collection. This might happen because the artist doesn't want his songs on Spotify, or the release is unavailable in your country. It is also possible that a release has different titles on Discogs and Spotify, so maybe a manual search in your Spotify App will get you the correct result for the following releases:</p>
+                    <p id="noMatchText" style="color:black">Unfortunately, the Spotify Search API didn't return any results for some of the releases in your Discogs collection. This might happen because the artist doesn't want his songs on Spotify, or the release is unavailable in your country. It is also possible that a release has different titles on Discogs and Spotify, so maybe a manual search in your Spotify App will get you the correct result for the following releases:</p>
                     <div id="noMatchDiv"></div>
                 </div>
                 <div class="modal-footer">
-                    <button id="closeButton" class="btn btn-large btn-primary" data-toggle="modal" data-target="#noMatch">Close</button>
+                    <button id="closeButton" class="btn btn-large btn-success" style="background-color:#648f00" data-toggle="modal" data-target="#noMatch">Close</button>
                 </div>
             </div>
         </div>
@@ -195,14 +186,14 @@
                     <h4 class="modal-title">Choose the best match</h4>
                 </div>
                 <div class="modal-body">
-                    <p>We found more than one possible match on Spotify. Please choose from the list below:</p>
+                    <p style="color:black">We found more than one possible match on Spotify. Please choose from the list below:</p>
                     <div id="matchfinder">
                         <div id="spotifyDiv">
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button id="noMatchButton" class="btn btn-large btn-primary" data-toggle="modal" data-target="#bestMatch" onClick="exportMultipleMatches()">None of the above</button>
+                    <button id="noMatchButton" class="btn btn-large btn-default" data-toggle="modal" data-target="#bestMatch" onClick="exportMultipleMatches()">None of the above</button>
                 </div>
             </div>
         </div>
