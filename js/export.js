@@ -25,11 +25,11 @@ $(document).ready(function () {
                 $('#loggedin').html('<p>Logged in as ' + userNameSpotify + '</p>');
             },
             error: function (xhr, data) {
-                window.location = "/login.html";
+                window.location = "/index.html";
             }
         });
     } else {
-        window.location = "/login.html";
+        window.location = "/index.html";
     }
 
     //TODO: "None of the above"
