@@ -69,11 +69,6 @@ $(document).ready(function () {
     });
 
 
-    // Start exporting after user got informaed about the new playlist
-    $('#playlistCreated').on('hidden.bs.modal', function (e) {
-        exportToSpotify();
-    });
-
     // Make the user choose the right release
     $('#releasesAdded').on('hidden.bs.modal', function (e) {
         exportMultipleMatches();
@@ -120,6 +115,9 @@ var userNameDiscogs;
 
 //Spotify playlist_id
 var playlistID;
+
+//Name of the playlist
+var playlistName;
 
 //Array of all releases with multiple matches on Spotify
 var multipleMatches = [];
@@ -205,17 +203,32 @@ function getCollection(userName, page) {
 
             addArtistsAndReleases(result);
 
-            //next page
-            if (result.pagination.page < result.pagination.pages) {
+            var currentPage = result.pagination.page;
+            var pages = result.pagination.pages;
 
-                var nextPage = result.pagination.page + 1;
-                getCollection(userName, nextPage);
+            //next page
+            if (currentPage < pages) {
+
+                var currentProgress = (currentPage / pages) * 20;
+                updateProgressBar(currentProgress);
+
+                var nextPage = currentPage + 1;
+
+                //Continue after a timeout so the progress gets updated
+                setTimeout(getCollection, 10, userName, nextPage);
 
             } else {
 
-                updateProgressBar(15);
+                //When all pages are loaded, the progress must be 20%
+                updateProgressBar(20);
 
-                $('#collectionFetchedText').html("We fetched a total of " + totalReleases + " releases from your Discogs collection.");
+                if (userNameDiscogs.match(/s$/) == 's') {
+                    playlistName = userNameDiscogs + "' Discogs Collection";
+                } else {
+                    playlistName = userNameDiscogs + "'s Discogs Collection";
+                }
+
+                $('#collectionFetchedText').html('We fetched a total of ' + totalReleases + ' releases from your Discogs collection.<br /><br />For the next step, we will create the playlist "' + playlistName + '" in your Spotify account and start filling it with the releases from your collection.');
                 $("#collectionFetched").modal('show');
             }
 
@@ -280,21 +293,13 @@ function addArtistsAndReleases(result) {
 /** Creates a new playlist in the user's Spotify account, using the Discogs username */
 function createPlaylist() {
 
-    var name;
-
-    if (userNameDiscogs.match(/s$/) == 's') {
-        name = userNameDiscogs + "' Discogs Collection";
-    } else {
-        name = userNameDiscogs + "'s Discogs Collection";
-    }
-
     $.ajax({
         url: 'https://api.spotify.com/v1/users/' + userID + '/playlists',
         headers: {
             'Authorization': 'Bearer ' + access_token
         },
         data: JSON.stringify({
-            "name": name,
+            "name": playlistName,
             "public": true
 
         }),
@@ -306,10 +311,7 @@ function createPlaylist() {
 
             updateProgressBar(20);
 
-            var playListCreatedText = 'New empty playlist "' + name + '" created in your Spotify account.';
-            $('#playlistCreatedText').html(playListCreatedText);
-
-            $("#playlistCreated").modal('show');
+            exportToSpotify();
 
         },
         error: function (request, xhr, data) {
@@ -405,9 +407,11 @@ function exportMultipleMatches() {
             var albumID = album.id;
             var imageURL = album.images[0].url;
 
-            $('#spotifyDiv').append('<div><img src="' + imageURL + '" width="20%" style="display:inline-block; margin:10px; vertical-align:top"><div style="display:inline-block; width:70%"><h4>' + album.name + '</h4><button id="' + albumID + ' ' + imageURL + '" type="button" class="btn btn-success" style="background-color:#648f00" onClick = "saveAlbumFromMulti(this.id)">Choose this</button></div></div>');
+            $('#spotifyDiv').append('<div><img src="' + imageURL + '" width="20%" style="display:inline-block; margin:10px; vertical-align:top"><div style="display:inline-block; width:70%"><h4>' + album.name + '</h4><button id="' + albumID + ' ' + imageURL + '" type="button" class="btn btn-success" onClick = "saveAlbumFromMulti(this.id)"><span class="icon-checkmark"></span> Choose this</button></div></div>');
 
         });
+
+        $('#noMatchButton').html('<span class="icon-cancel-circle"></span> None of the above');
 
         $("#bestMatch").modal('show');
 

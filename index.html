@@ -27,6 +27,8 @@
     <!-- Bootstrap CSS -->
     <link href="css/bootstrap.css" rel="stylesheet">
 
+    <!-- Icons CSS -->
+    <link href="css/icons.css" rel="stylesheet">
 
 
     <!-- Styles ---------------------->
@@ -57,20 +59,54 @@
             margin: 1em 0;
             padding: 0;
         }
+        button:active {
+            outline: none;
+            border: none;
+        }
+        button:focus {
+            outline: 0 !important;
+        }
+        .btn-default {
+            border-radius: 24px;
+            padding-left: 30px;
+            padding-right: 30px;
+        }
+        .btn-success {
+            background-color: #1db954;
+            border-color: #1db954;
+            border-radius: 24px;
+            padding-left: 30px;
+            padding-right: 30px;
+        }
+        .btn-success:hover {
+            background-color: #1ed760;
+            border-color: #1ed760;
+        }
+        .btn-success:focus {
+            background-color: #1ed760;
+            border-color: #1ed760;
+        }
+        .btn-danger {
+            border-radius: 24px;
+            padding-left: 30px;
+            padding-right: 30px;
+        }
     </style>
 
 </head>
 
 <body>
 
-    <div class="container" style="margin:15px">
+    <div class="container" style="margin:5%">
 
-        <div class="jumbotron" style="background-color:#282828; margin-top:20px">
+        <div class="jumbotron" style="background-color:#282828;">
 
             <div id="login">
-                <h1 style="color:#adafb2">Log in to use Discogs&shy;To&shy;Spotify <i>- Beta</i></h1>
+                <h1 style="color:#adafb2">Welcome to Discogs&shy;To&shy;Spotify <i>- Beta</i></h1>
                 <p>Please log in using your Spotify account to export any public Discogs collection to a Spotify playlist.</p>
-                <img id="login" src="log_in-desktop-large.png" style="height:42px">
+
+                <button id="login" class="btn btn-large btn-success"><span class="icon-spotify"></span> Log in with Spotify</button>
+
             </div>
 
         </div>
@@ -88,9 +124,10 @@
                 <div class="col-md-4">
                     <h2>About the Dev</h2>
                     <p>I'm Krispin, a German Developer and huge fan of Punk, Metal and Ska. I have been collecting records on vinyl for about three years now, and I keep track of my collection on Discogs. I also like to listen to my music on the go, so I thought it would be really cool if you could export your Discogs collection to a streaming service like Spotify. That's why I started developing DiscogsToSpotify.</p>
-                    <p>If you experience any trouble with this Application, please do not hesitate to contact me at
-                        <a href="mailto:krispin@discogstospotify.com">krispin@DiscogsToSpotify.com</a>.</p>
-                    <p>You can also check out my other projects on <a href="https://github.com/lim93/">GitHub</a>.
+                    <p><span class="icon-mail4"></span> If you experience any trouble with this Application, please do not hesitate to
+                        <a href="mailto:krispin@discogstospotify.com">contact</a> me.
+                    </p>
+                    <p><span class="icon-github"></span> You can also check out my other projects on <a href="https://github.com/lim93/">GitHub</a>.
                     </p>
 
                 </div>
@@ -99,7 +136,7 @@
             <hr>
 
             <footer>
-                <p>Developed by <a href="https://github.com/lim93/">lim93</a> in 2016</p>
+                <p>Created by <a href="https://github.com/lim93/"><span class="icon-github"></span> lim93</a> in 2016</p>
             </footer>
         </div>
 

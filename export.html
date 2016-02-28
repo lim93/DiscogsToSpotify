@@ -24,6 +24,9 @@
     <!-- Bootstrap CSS -->
     <link href="css/bootstrap.css" rel="stylesheet">
 
+    <!-- Icons CSS -->
+    <link href="css/icons.css" rel="stylesheet">
+
 
 
     <!-- Styles ---------------------->
@@ -45,19 +48,54 @@
         p {
             color: #adafb2;
         }
-        myModal {}
+        button:active {
+            outline: none;
+            border: none;
+        }
+        button:focus {
+            outline: 0 !important;
+        }
+        .btn-default {
+            border-radius: 24px;
+            padding-left: 30px;
+            padding-right: 30px;
+        }
+        .btn-success {
+            background-color: #1db954;
+            border-color: #1db954;
+            border-radius: 24px;
+            padding-left: 30px;
+            padding-right: 30px;
+        }
+        .btn-success:hover {
+            background-color: #1ed760;
+            border-color: #1ed760;
+        }
+        .btn-success:focus {
+            background-color: #1ed760;
+            border-color: #1ed760;
+        }
+        .btn-danger {
+            border-radius: 24px;
+            padding-left: 30px;
+            padding-right: 30px;
+        }
     </style>
 
 </head>
 
 <body>
 
-    <div class="container" style="margin:15px">
 
-        <div class="jumbotron" style="background-color:#282828; margin-top:20px">
+
+    <div class="container" style="margin:5%">
+
+        <div class="jumbotron" style="background-color:#282828;">
 
             <div id="export">
-                <h1 style="color:#adafb2">Export your Discogs Collection to a Spotify playlist</h1>
+                <h1 style="color:#adafb2">Export your Discogs collection to a Spotify playlist</h1>
+
+                <br>
 
                 <div id="login">
                     <p>Logged out</p>
@@ -67,18 +105,21 @@
 
                 <div>
 
-                    <input style="width: 250px; max-width: 100%; float:left; margin-right:10px" name="user" id="user" type="text" class="form-control" placeholder="Discogs-Username" />
+                    <input style="width: 254px; max-width: 100%; float:left; margin-right:10px; margin-bottom:10px; border-radius: 24px;" name="user" id="user" type="text" class="form-control" placeholder="Discogs-Username" />
 
-                    <img id="start" src="create-playlist-green.png" style="height:34px; margin-bottom:20px">
+                    <button id="start" class="btn btn-large btn-success"><span class="icon-discogs-icon"></span> Get collection from Discogs</button>
 
+                    <br>
 
-                    <div id="progressDiv" class="hide">
-                        <div id="progressbar" class="progress">
-                            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="color:white; background-color:#648f00; width: 0%; min-width: 2em"><span id="progressNumber">0%</span>
+                    <div id="progressDiv" class="hide" style="margin-top:20px;">
+                        <div id="progressbar" class="progress" style="height:30px;  border-radius: 24px;">
+                            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="color:white; background-color:#1db954; width: 0%; min-width: 2em; padding-top:6px"><span id="progressNumber">0%</span>
                             </div>
                         </div>
                     </div>
                 </div>
+
+
             </div>
 
         </div>
@@ -90,6 +131,7 @@
 
         </div>
 
+
     </div>
 
 
@@ -99,7 +141,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Error</h4>
+                    <h4 class="modal-title"><span class="icon-notification"></span> Error</h4>
                 </div>
                 <div class="modal-body">
                     <p id="errorModalText" style="color:black"></p>
@@ -122,11 +164,13 @@
                     <p id="collectionFetchedText" style="color:black"></p>
                 </div>
                 <div class="modal-footer">
-                    <button id="collectionFetchedButton" class="btn btn-large btn-success" style="background-color:#648f00" data-toggle="modal" data-target="#collectionFetched">Create Playlist!</button>
+                    <button id="collectionFetchedButton" class="btn btn-large btn-success" data-toggle="modal" data-target="#collectionFetched"><span class="icon-Converted_file_4fe041e8"></span><span class="icon-spotify"></span> Create Playlist</button>
                 </div>
             </div>
         </div>
     </div>
+
+
 
 
     <!-- Modal: Playlist created -->
@@ -140,7 +184,7 @@
                     <p id="playlistCreatedText" style="color:black"></p>
                 </div>
                 <div class="modal-footer">
-                    <button id="beginExportButton" class="btn btn-large btn-success" style="background-color:#648f00" data-toggle="modal" data-target="#playlistCreated">Fill with tracks!</button>
+                    <button id="beginExportButton" class="btn btn-large btn-success" data-toggle="modal" data-target="#playlistCreated"><span class="glyphicon glyphicon-record" aria-hidden="true"></span> Fill with tracks!</button>
                 </div>
             </div>
         </div>
@@ -149,7 +193,7 @@
 
 
     <!-- Modal: X Releases added -->
-    <div id="releasesAdded" class="modal fade myModal">
+    <div id="releasesAdded" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -159,7 +203,7 @@
                     <p id="releasesAddedText" style="color:black"></p>
                 </div>
                 <div class="modal-footer">
-                    <button id="okButton" class="btn btn-large btn-success" style="background-color:#648f00" data-toggle="modal" data-target="#releasesAdded">Ok</button>
+                    <button id="okButton" class="btn btn-large btn-success" data-toggle="modal" data-target="#releasesAdded">Ok</button>
                 </div>
             </div>
         </div>
@@ -167,7 +211,7 @@
 
 
     <!-- Modal: No match -->
-    <div id="noMatch" class="modal fade myModal">
+    <div id="noMatch" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -178,14 +222,14 @@
                     <div id="noMatchDiv"></div>
                 </div>
                 <div class="modal-footer">
-                    <button id="closeButton" class="btn btn-large btn-success" style="background-color:#648f00" data-toggle="modal" data-target="#noMatch">Close</button>
+                    <button id="closeButton" class="btn btn-large btn-success" data-toggle="modal" data-target="#noMatch">Close</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Modal: Coose best match -->
-    <div id="bestMatch" class="modal fade myModal">
+    <div id="bestMatch" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header" id="bestMatchHeader">
@@ -199,7 +243,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button id="noMatchButton" class="btn btn-large btn-default" data-toggle="modal" data-target="#bestMatch" onClick="exportMultipleMatches()">None of the above</button>
+                    <button id="noMatchButton" class="btn btn-large btn-default" data-toggle="modal" data-target="#bestMatch" onClick="exportMultipleMatches()"></button>
                 </div>
             </div>
         </div>
