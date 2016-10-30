@@ -405,7 +405,11 @@ function exportMultipleMatches() {
 
             var name = album.name;
             var albumID = album.id;
-            var imageURL = album.images[0].url;
+            var imageURL = '../record.png';
+
+            if (album.images.length !== 0) {
+                imageURL = album.images[0].url;
+            }
 
             $('#spotifyDiv').append('<div><img src="' + imageURL + '" width="20%" style="display:inline-block; margin:10px; vertical-align:top"><div style="display:inline-block; width:70%"><h4>' + album.name + '</h4><button id="' + albumID + ' ' + imageURL + '" type="button" class="btn btn-success" onClick = "saveAlbumFromMulti(this.id)"><span class="icon-checkmark"></span> Choose this</button></div></div>');
 
@@ -516,7 +520,11 @@ function handleResultFromSpotify(result, release) {
             done = true;
 
             var albumID = album.id;
-            var imageURL = album.images[0].url;
+            var imageURL = '../record.png';
+
+            if (album.images.length !== 0) {
+                imageURL = album.images[0].url;
+            }
 
             saveAlbumToPlaylist(albumID, imageURL);
 
@@ -531,7 +539,11 @@ function handleResultFromSpotify(result, release) {
         var album = items[0];
 
         var albumID = album.id;
-        var imageURL = album.images[0].url;
+        var imageURL = '../record.png';
+
+        if (album.images.length !== 0) {
+            imageURL = album.images[0].url;
+        }
 
         saveAlbumToPlaylist(albumID, imageURL);
 
