@@ -197,7 +197,7 @@ function getCollection(userName, page) {
     var folderId = 0;
 
     $.ajax({
-        url: 'https://api.discogs.com/users/' + userName + '/collection/folders/' + folderId + '/releases?page=' + page,
+        url: 'https://api.discogs.com/users/' + userName + '/collection/folders/' + folderId + '/releases?page=' + page + '&per_page=100',
         type: "GET",
         success: function (result) {
 
