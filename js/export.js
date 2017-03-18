@@ -1,5 +1,7 @@
 $(document).ready(function () {
 
+    $('#waiting').hide();
+
     var params = getHashParams();
     access_token = params.access_token;
 
@@ -194,6 +196,8 @@ function updateProgressBar(percent) {
 /** Entry point. Fetches the user's collection from Discogs */
 function getCollection(userName, page) {
 
+    $('#waiting').hide();
+
     var folderId = 0;
 
     $.ajax({
@@ -215,7 +219,7 @@ function getCollection(userName, page) {
                 var nextPage = currentPage + 1;
 
                 //Continue after a timeout so the progress gets updated
-                setTimeout(getCollection, 10, userName, nextPage);
+                setTimeout(getCollection, 500, userName, nextPage);
 
             } else {
 
@@ -238,6 +242,16 @@ function getCollection(userName, page) {
             if (xhr.status == 404) {
                 $('#errorModalText').html("Unknown Discogs username. Please try again.");
                 $("#errorModal").modal('show');
+            } else if (xhr.status == 0) {
+
+                $('#waiting').show();
+
+                //Wait a 'few' seconds, then try again
+                setTimeout(getCollection, 61000, userName, page);
+            } else if (xhr.status == 401) {
+                $('#errorModalText').html("We couldn't fetch your collection from Discogs. Please go to your Discogs <a href='https://www.discogs.com/settings/privacy'>Privacy Settings</a> and make sure that you allow others to browse your collection.");
+                $("#errorModal").modal('show');
+
             } else {
                 $('#errorModalText').html("Something went wrong while fetching your collection: " + xhr.status + ". Please try again.");
                 $("#errorModal").modal('show');
@@ -466,7 +480,13 @@ function showNoMatch() {
 /** Start a search on Spotify and handle the result */
 function searchReleaseOnSpotify(release) {
 
-    var query = 'album:"' + release.title + '" artist:"' + release.artistName + '"';
+    var rTitle = release.title;
+
+    if (rTitle.endsWith("EP") || rTitle.endsWith("LP")) {
+        rTitle = rTitle.slice(0, -2).trim();
+    }
+
+    var query = 'album:"' + rTitle + '" artist:"' + release.artistName + '"';
 
     $.ajax({
         url: 'https://api.spotify.com/v1/search',
