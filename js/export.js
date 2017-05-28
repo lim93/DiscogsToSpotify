@@ -23,8 +23,25 @@ $(document).ready(function () {
                 userID = response.id;
                 userCountry = response.country;
                 userNameSpotify = response.display_name;
+                userImageURL = '';
+                userImage = '';
 
-                $('#loggedin').html('<p>Logged in as ' + userNameSpotify + '</p>');
+                if (response.images[0] != null) {
+                    userImageURL = response.images[0].url;
+                }
+
+                if (userImageURL !== '') {
+                    userImage = '<img src="' + userImageURL + '" style="width:25px;height:25px;float:left;display:inline;margin-right:10px;">'
+                }
+
+                if (userNameSpotify === null) {
+                    $('#loggedin').html(userImage + '<p> Spotify User: ' + userID + '</p>');
+                } else {
+                    $('#loggedin').html(userImage + '<p> Spotify User: ' + userNameSpotify + '</p>');
+
+                }
+
+
             },
             error: function (xhr, data) {
                 window.location = "/index.html";
@@ -329,8 +346,10 @@ function createPlaylist() {
 
         },
         error: function (request, xhr, data) {
+            errorJSON = request.responseJSON;
+            message = errorJSON.error.message;
 
-            $('#errorModalText').html("Something went wrong while creating a Spotify playlist: " + xhr.status + ". Please try again.");
+            $('#errorModalText').html("Something went wrong while creating a Spotify playlist: " + xhr.status + ". Please try again. (" + message + ")");
             $("#errorModal").modal('show');
 
         }

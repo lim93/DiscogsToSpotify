@@ -8,8 +8,7 @@ $(document).ready(function () {
     $("#login").click(function () {
 
         var client_id = '394bdbf8b6c344c2bddb153165e00801';
-        var redirect_uri = 'http://localhost:57448/export.html';
-        //var redirect_uri = 'http://discogstospotify.com/export.html';
+        var redirect_uri = 'http://discogstospotify.com/export.html';
 
         //TODO: State
 
