@@ -321,11 +321,16 @@ function addArtistsAndReleases(result) {
 }
 
 
+function encodeURIfix(str) {
+    return encodeURIComponent(str).replace(/!/g, '%21');
+}
+
+
 /** Creates a new playlist in the user's Spotify account, using the Discogs username */
 function createPlaylist() {
 
     $.ajax({
-        url: 'https://api.spotify.com/v1/users/' + userID + '/playlists',
+        url: 'https://api.spotify.com/v1/users/' + encodeURIfix(userID) + '/playlists',
         headers: {
             'Authorization': 'Bearer ' + access_token
         },
@@ -642,7 +647,7 @@ function saveAlbumTracks(tracks) {
     });
 
     return $.ajax({
-        url: 'https://api.spotify.com/v1/users/' + userID + '/playlists/' + playlistID + '/tracks',
+        url: 'https://api.spotify.com/v1/users/' + encodeURIfix(userID) + '/playlists/' + playlistID + '/tracks',
         headers: {
             'Authorization': 'Bearer ' + access_token
         },
