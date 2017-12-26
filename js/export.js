@@ -54,7 +54,7 @@ $(document).ready(function () {
     //TODO: "None of the above"
 
     // Start-Button
-    $("#start").click(function () {
+    $("#start, #startWantlist").click(function (e) {
 
         //Prevent starting the export twice
         if (exportActive == true) {
@@ -77,8 +77,10 @@ $(document).ready(function () {
         $('#progressDiv').removeClass('hide');
         updateProgressBar(0);
 
+        var getWantlist = e.target.id === 'startWantlist';
+
         //Start after a timeout so the Browser gets time to display the changes
-        setTimeout(getCollection, 10, userNameDiscogs, 1);
+        setTimeout(getCollection, 10, userNameDiscogs, 1, getWantlist);
 
 
     });
@@ -211,15 +213,19 @@ function updateProgressBar(percent) {
 
 
 /** Entry point. Fetches the user's collection from Discogs */
-function getCollection(userName, page) {
+function getCollection(userName, page, getWantlist) {
 
     $('#waiting').hide();
 
     var folderId = 0;
 
+    var collectionURLsegment = getWantlist ? '/wants' : '/collection/folders/' + folderId + '/releases';
+    var url = 'https://api.discogs.com/users/' + userName + collectionURLsegment +'?page=' + page + '&per_page=100'
+
     $.ajax({
-        url: 'https://api.discogs.com/users/' + userName + '/collection/folders/' + folderId + '/releases?page=' + page + '&per_page=100',
+        url: url,
         type: "GET",
+        crossDomain: true,
         success: function (result) {
 
             addArtistsAndReleases(result);
@@ -236,7 +242,7 @@ function getCollection(userName, page) {
                 var nextPage = currentPage + 1;
 
                 //Continue after a timeout so the progress gets updated
-                setTimeout(getCollection, 500, userName, nextPage);
+                setTimeout(getCollection, 500, userName, nextPage, getWantlist);
 
             } else {
 
@@ -282,7 +288,9 @@ function getCollection(userName, page) {
 /** Takes the result from Discogs and adds each artist and their releases to the global array (No duplicates!) */
 function addArtistsAndReleases(result) {
 
-    $.each(result.releases, function (pos, release) {
+    var releases = result.releases || result.wants;
+
+    $.each(releases, function (pos, release) {
 
         var releaseTitle = release.basic_information.title;
         var releaseYear = release.basic_information.year;
