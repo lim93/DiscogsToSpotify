@@ -249,13 +249,15 @@ function getCollection(userName, page, getWantlist) {
                 //When all pages are loaded, the progress must be 20%
                 updateProgressBar(20);
 
+                var playlistStr = " Discogs " + getWantlist ? "Wantlist" : "Collection"; 
+
                 if (userNameDiscogs.match(/s$/) == 's') {
-                    playlistName = userNameDiscogs + "' Discogs Collection";
+                    playlistName = userNameDiscogs + "'" + playlistStr;
                 } else {
-                    playlistName = userNameDiscogs + "'s Discogs Collection";
+                    playlistName = userNameDiscogs + "'s" + playlistStr;
                 }
 
-                $('#collectionFetchedText').html('We fetched a total of ' + totalReleases + ' releases from your Discogs collection.<br /><br />For the next step, we will create the playlist "' + playlistName + '" in your Spotify account and start filling it with the releases from your collection.');
+                $('#collectionFetchedText').html('We fetched a total of ' + totalReleases + ' releases from your'  + playlistStr +'.<br /><br />For the next step, we will create the playlist "' + playlistName + '" in your Spotify account and start filling it with the releases from your collection.');
                 $("#collectionFetched").modal('show');
             }
 
