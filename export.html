@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html>
 
 <head>
     <meta charset="utf-8">
@@ -103,23 +104,37 @@
 
                 <div id="loggedin"></div>
 
-                <div>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-3" style="padding: 0px; padding-right: 15px; min-width: 200px; max-width: 269px">
+                            <input style="width: 100%; max-width: 100%; float:left; margin-bottom:10px; border-radius: 24px;" name="user" id="user" type="text" class="form-control" placeholder="Discogs-Username" />
+                        </div>
 
-                    <input style="width: 254px; max-width: 100%; float:left; margin-right:10px; margin-bottom:10px; border-radius: 24px;" name="user" id="user" type="text" class="form-control" placeholder="Discogs-Username" />
+                        <div class="col-sm-4" style="padding: 0px; padding-right: 15px; min-width: 284px; max-width: 284px">
+                            <button id="start" class="btn btn-large btn-success"><span class="icon-discogs-icon"></span> Get collection from Discogs</button>
+                        </div>
 
-                    <button id="start" class="btn btn-large btn-success"><span class="icon-discogs-icon"></span> Get collection from Discogs</button>
-                    <button id="startWantlist" class="btn btn-large btn-success"><span class="icon-discogs-icon"></span> Get wantlist from Discogs</button>
+                        <div class="col-sm-1" style="padding: 0px; padding-right: 15px; min-width: 45px; max-width: 45px">
+                            <p>or</p>
+                        </div>
 
-                    <br>
-
-                    <div id="progressDiv" class="hide" style="margin-top:20px;">
-                        <div id="progressbar" class="progress" style="height:30px;  border-radius: 24px;">
-                            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="color:white; background-color:#1db954; width: 0%; min-width: 2em; padding-top:6px"><span id="progressNumber">0%</span>
-                            </div>
+                        <div class="col-sm-3" style="padding: 0px; min-width: 284px; max-width: 284px">
+                            <button id="startWantlist" class="btn btn-large btn-default" style="width: 254px;"><span class="icon-discogs-icon"></span> Get wantlist from Discogs</button>
                         </div>
                     </div>
                 </div>
-                
+
+                <br>
+
+                <div id="progressDiv" class="hide" style="margin-top:20px;">
+                    <div id="progressbar" class="progress" style="height:30px;  border-radius: 24px;">
+                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="color:white; background-color:#1db954; width: 0%; min-width: 2em; padding-top:6px"><span id="progressNumber">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+
+
                 <div id="waiting">
                     <p>Waiting for Discogs API...</p>
                 </div>
