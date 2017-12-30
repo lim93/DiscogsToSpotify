@@ -220,7 +220,7 @@ function getCollection(userName, page, getWantlist) {
     var folderId = 0;
 
     var collectionURLsegment = getWantlist ? '/wants' : '/collection/folders/' + folderId + '/releases';
-    var url = 'https://api.discogs.com/users/' + userName + collectionURLsegment +'?page=' + page + '&per_page=100'
+    var url = 'https://api.discogs.com/users/' + userName + collectionURLsegment + '?page=' + page + '&per_page=100'
 
     $.ajax({
         url: url,
@@ -249,7 +249,7 @@ function getCollection(userName, page, getWantlist) {
                 //When all pages are loaded, the progress must be 20%
                 updateProgressBar(20);
 
-                var playlistStr = getWantlist ? "Wantlist" : "Collection"; 
+                var playlistStr = getWantlist ? "Wantlist" : "Collection";
 
                 if (userNameDiscogs.match(/s$/) == 's') {
                     playlistName = userNameDiscogs + " Discogs " + playlistStr;
@@ -257,7 +257,7 @@ function getCollection(userName, page, getWantlist) {
                     playlistName = userNameDiscogs + "'s Discogs " + playlistStr;
                 }
 
-                $('#collectionFetchedText').html('We fetched a total of ' + totalReleases + ' releases from your ' + playlistStr +'.<br /><br />For the next step, we will create the playlist "' + playlistName + '" in your Spotify account and start filling it with the releases from your collection.');
+                $('#collectionFetchedText').html('We fetched a total of ' + totalReleases + ' releases from your ' + playlistStr + '.<br /><br />For the next step, we will create the playlist "' + playlistName + '" in your Spotify account and start filling it with the releases from your collection.');
                 $("#collectionFetched").modal('show');
             }
 
@@ -539,9 +539,15 @@ function searchReleaseOnSpotify(release) {
         },
         error: function (request, xhr, data) {
 
-            $('#errorModalText').html("Something went wrong while searching on Spotify: " + xhr.status + ". Please try again.");
-            $("#errorModal").modal('show');
+            if (data === "Too Many Requests") {
 
+                //Wait a few seconds, then try again
+                setTimeout(searchReleaseOnSpotify, 2000, release);
+            } else {
+
+                $('#errorModalText').html("Something went wrong while searching on Spotify: " + data + ". Please try again.");
+                $("#errorModal").modal('show');
+            }
         },
         async: false
     });
@@ -638,8 +644,18 @@ function saveAlbumToPlaylist(albumID, imageURL) {
 
         },
         error: function (request, xhr, data) {
-            $('#errorModalText').html("Something went wrong while getting the album tracks: " + xhr.status + ". Please try again.");
-            $("#errorModal").modal('show');
+
+            if (data === "Too Many Requests") {
+
+                //Wait a few seconds, then try again
+                setTimeout(saveAlbumToPlaylist, 2000, albumID, imageURL);
+            } else {
+
+                $('#errorModalText').html("Something went wrong while getting the album tracks: " + data + ". Please try again.");
+                $("#errorModal").modal('show');
+            }
+
+
         },
         async: false
     });
@@ -673,8 +689,17 @@ function saveAlbumTracks(tracks) {
         },
         error: function (request, xhr, data) {
 
-            $('#errorModalText').html("Something went wrong while saving the tracks to your playlist: " + xhr.status + ". Please try again.");
-            $("#errorModal").modal('show');
+            if (data === "Too Many Requests") {
+
+                //Wait a few seconds, then try again
+                setTimeout(saveAlbumTracks, 2000, tracks);
+            } else {
+
+                $('#errorModalText').html("Something went wrong while saving the tracks to your playlist: " + data + ". Please try again.");
+                $("#errorModal").modal('show');
+            }
+
+
 
         },
         async: false
