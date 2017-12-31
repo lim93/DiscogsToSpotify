@@ -539,7 +539,7 @@ function searchReleaseOnSpotify(release) {
         },
         error: function (request, xhr, data) {
 
-            if (data === "Too Many Requests") {
+            if (data === "Too Many Requests"  || data === "Bad Gateway") {
 
                 //Wait a few seconds, then try again
                 setTimeout(searchReleaseOnSpotify, 2000, release);
@@ -645,7 +645,7 @@ function saveAlbumToPlaylist(albumID, imageURL) {
         },
         error: function (request, xhr, data) {
 
-            if (data === "Too Many Requests") {
+            if (data === "Too Many Requests"  || data === "Bad Gateway") {
 
                 //Wait a few seconds, then try again
                 setTimeout(saveAlbumToPlaylist, 2000, albumID, imageURL);
@@ -689,7 +689,7 @@ function saveAlbumTracks(tracks) {
         },
         error: function (request, xhr, data) {
 
-            if (data === "Too Many Requests") {
+            if (data === "Too Many Requests" || data === "Bad Gateway") {
 
                 //Wait a few seconds, then try again
                 setTimeout(saveAlbumTracks, 2000, tracks);
