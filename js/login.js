@@ -9,7 +9,7 @@ $(document).ready(function () {
 
         var client_id = '394bdbf8b6c344c2bddb153165e00801';
         var redirect_uri = 'http://discogstospotify.com/export.html';        
-        
+
         //TODO: State
 
         var scope = 'playlist-modify-public playlist-modify-private user-read-private';
