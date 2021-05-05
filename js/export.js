@@ -519,13 +519,14 @@ function searchReleaseOnSpotify(release) {
         rArtist.replace('\'', ''); // there is a bug in spotify's search, apparently
     }
     var rTitle = release.title;
-    var formatSuffixes = ['EP', 'E.P.', 'E.P', 'LP']
+    var formatSuffixes = ['EP', 'E.P.', 'E.P', 'LP', 'L.P.',' L.P']
 
     if (rTitle) {
         rTitle.replace('\'', '');
         for (var i = 0; i < formatSuffixes.length; i++) {
-            // only strip the suffix if it's not the full title (example "L.P." by "The Rembrandts")
-            if (rTitle.endsWith(formatSuffixes[i]) && rTitle.length > formatSuffixes[i].length) {
+            // ensure there is a leading space, so that potential acronym titles ("W.E.L.P.") do not get filtered out
+            // this also prevents issues with releases such as "L.P." by "The Rembrandts"
+            if (rTitle.endsWith(' ' + formatSuffixes[i])) {
                 rTitle = rTitle.slice(0, -formatSuffixes[i].length).trim();
                 break;
             }
