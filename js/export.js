@@ -526,6 +526,7 @@ function searchReleaseOnSpotify(release) {
         for (var i = 0; i < formatSuffixes.length; i++) {
             if (rTitle.endsWith(formatSuffixes[i])) {
                 rTitle = rTitle.slice(0, -formatSuffixes[i].length).trim();
+                break;
             }
         }
     }
