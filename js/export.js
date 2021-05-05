@@ -301,7 +301,7 @@ function addArtistsAndReleases(result) {
 
         //Some artists on Discogs have a number in closing round parenthesis behing their name. We don't want these.
         var splitName = releaseArtistName.split(/([(]\d+[)].*)/);
-        var artistName = splitName[0];
+        var artistName = splitName[0].trim();
 
         var thisRelease = new releaseObject(releaseTitle, artistName, releaseYear);
 
