@@ -524,7 +524,8 @@ function searchReleaseOnSpotify(release) {
     if (rTitle) {
         rTitle.replace('\'', '');
         for (var i = 0; i < formatSuffixes.length; i++) {
-            if (rTitle.endsWith(formatSuffixes[i])) {
+            // only strip the suffix if it's not the full title (example "L.P." by "The Rembrandts")
+            if (rTitle.endsWith(formatSuffixes[i]) && rTitle.length > formatSuffixes[i].length) {
                 rTitle = rTitle.slice(0, -formatSuffixes[i].length).trim();
                 break;
             }
