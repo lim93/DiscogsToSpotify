@@ -514,7 +514,7 @@ function showNoMatch() {
 /** Start a search on Spotify and handle the result */
 function searchReleaseOnSpotify(release) {
 
-    var rArtist = releases.artistName;
+    var rArtist = release.artistName;
     if (rArtist) {
         rArtist = rArtist.replace('\'', ''); // there is a bug in spotify's search, apparently
     }
