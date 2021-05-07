@@ -226,6 +226,10 @@ function getCollection(userName, page, getWantlist) {
         url: url,
         type: "GET",
         crossDomain: true,
+        data: { 
+            sort: "artist", 
+            sort_order: "asc"
+        },
         success: function (result) {
 
             addArtistsAndReleases(result);
@@ -516,13 +520,14 @@ function searchReleaseOnSpotify(release) {
 
     var rArtist = release.artistName;
     if (rArtist) {
-        rArtist = rArtist.replace('\'', ''); // there is a bug in spotify's search, apparently
+        rArtist = rArtist.replace(/'/g, ''); // there is a bug in spotify's search, apparently
     }
     var rTitle = release.title;
     var formatSuffixes = ['EP', 'E.P.', 'E.P', 'LP', 'L.P.',' L.P']
 
     if (rTitle) {
-        rTitle = rTitle.replace('\'', '');
+     	rTitle = rTitle.replace('\'n\'', ' n '); // Twists'n'Turns => Twists n Turns
+        rTitle = rTitle.replace(/'/g, '');
         for (var i = 0; i < formatSuffixes.length; i++) {
             // ensure there is a leading space, so that potential acronym titles ("W.E.L.P.") do not get filtered out
             // this also prevents issues with releases such as "L.P." by "The Rembrandts"
