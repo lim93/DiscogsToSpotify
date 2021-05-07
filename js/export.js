@@ -61,7 +61,7 @@ $(document).ready(function () {
             return;
         } else(exportActive = true);
 
-        //Reset some of the global values when the start-button is clicked 
+        //Reset some of the global values when the start-button is clicked
         globalArtists = [];
         playlistID = null;
         multipleMatches = [];
@@ -177,8 +177,8 @@ function multipleMatch(release, matches) {
 
 
 
-/** We don't want duplicate artists in the global array, so this method checks 
-if the array contains the given artist (by name) and returns either the position 
+/** We don't want duplicate artists in the global array, so this method checks
+if the array contains the given artist (by name) and returns either the position
 in the array or -1. */
 function artistsContainsName(name) {
 
@@ -301,7 +301,7 @@ function addArtistsAndReleases(result) {
 
         //Some artists on Discogs have a number in closing round parenthesis behing their name. We don't want these.
         var splitName = releaseArtistName.split(/([(]\d+[)].*)/);
-        var artistName = splitName[0];
+        var artistName = splitName[0].trim();
 
         var thisRelease = new releaseObject(releaseTitle, artistName, releaseYear);
 
@@ -320,7 +320,7 @@ function addArtistsAndReleases(result) {
 
         } else {
 
-            //Create new artist with new release-array and add artist to the global array      
+            //Create new artist with new release-array and add artist to the global array
             globalArtists.push(new artist(releaseArtistName, new Array(thisRelease)));
             totalReleases++;
             totalArtists++;
@@ -413,7 +413,7 @@ function exportToSpotify() {
 }
 
 
-/** Helper function that calculates the progress based on the number of already exported artists and then 
+/** Helper function that calculates the progress based on the number of already exported artists and then
  * sets a timeout until the next *artist gets exported. This leaves time for the browser to display the updated
  * progress bar and the cover images */
 function updateProgress() {
@@ -428,7 +428,7 @@ function updateProgress() {
 }
 
 
-/** If there are releases with multiple possible matches, we display a modal to make the user decide 
+/** If there are releases with multiple possible matches, we display a modal to make the user decide
  * which is the right one */
 function exportMultipleMatches() {
 
@@ -459,7 +459,7 @@ function exportMultipleMatches() {
                 imageURL = album.images[0].url;
             }
 
-            $('#spotifyDiv').append('<div><img src="' + imageURL + '" width="20%" style="display:inline-block; margin:10px; vertical-align:top"><div style="display:inline-block; width:70%"><h4>' + album.name + '</h4><button id="' + albumID + ' ' + imageURL + '" type="button" class="btn btn-success" onClick = "saveAlbumFromMulti(this.id)"><span class="icon-checkmark"></span> Choose this</button></div></div>');
+            $('#spotifyDiv').append('<div><img src="' + imageURL + '" width="20%" style="display:inline-block; margin:10px; vertical-align:top"><div style="display:inline-block; width:70%"><h4>' + name + '</h4><button id="' + albumID + ' ' + imageURL + '" type="button" class="btn btn-success" onClick = "saveAlbumFromMulti(this.id)"><span class="icon-checkmark"></span> Choose this</button></div></div>');
 
         });
 
@@ -514,13 +514,27 @@ function showNoMatch() {
 /** Start a search on Spotify and handle the result */
 function searchReleaseOnSpotify(release) {
 
+    var rArtist = release.artistName;
+    if (rArtist) {
+        rArtist = rArtist.replace('\'', ''); // there is a bug in spotify's search, apparently
+    }
     var rTitle = release.title;
+    var formatSuffixes = ['EP', 'E.P.', 'E.P', 'LP', 'L.P.',' L.P']
 
-    if (rTitle.endsWith("EP") || rTitle.endsWith("LP")) {
-        rTitle = rTitle.slice(0, -2).trim();
+    if (rTitle) {
+        rTitle = rTitle.replace('\'', '');
+        for (var i = 0; i < formatSuffixes.length; i++) {
+            // ensure there is a leading space, so that potential acronym titles ("W.E.L.P.") do not get filtered out
+            // this also prevents issues with releases such as "L.P." by "The Rembrandts"
+            if (rTitle.endsWith(' ' + formatSuffixes[i])) {
+                rTitle = rTitle.slice(0, -formatSuffixes[i].length).trim();
+                break;
+            }
+        }
     }
 
-    var query = 'album:"' + rTitle + '" artist:"' + release.artistName + '"';
+
+    var query = 'album:"' + rTitle + '" artist:"' + rArtist + '"';
 
     $.ajax({
         url: 'https://api.spotify.com/v1/search',
@@ -574,7 +588,7 @@ function handleResultFromSpotify(result, release) {
 
         var name = album.name;
 
-        //exact match 
+        //exact match
         if (!done && name.toLowerCase() === release.title.toLowerCase()) {
 
             done = true;
