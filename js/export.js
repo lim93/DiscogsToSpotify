@@ -452,12 +452,12 @@ function exportMultipleMatches() {
 
 
         $('#bestMatchHeader').html("<h4 class='modal-title'>Choose the best match for <b>" + release.title + "</b> by " + release.artistName + yearString + "</h4>");
-        var matchDetails = 'There are ' + match.totalMatchCount + ' possible matches on Spotify.';
+        var matchDetails = 'There are ' + match.totalMatchCount + ' possible matches on Spotify. ';
         var searchLimit = 50;
         if (match.totalMatchCount > searchLimit) {
-            matchDetails = matchDetails.concat('Here are the first ' + searchLimit + '.');
+            matchDetails = matchDetails.concat('Here are the first ' + searchLimit + '. ');
         }
-        matchDetails = matchDetails.concat(' Please choose from the list below:');
+        matchDetails = matchDetails.concat('Please choose from the list below:');
         $('#bestMatchDetails').html(matchDetails);
 
         var matches = match.matches;
