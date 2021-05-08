@@ -725,7 +725,7 @@ function saveAlbumTracks(tracks) {
 
 /** strips single quotes because Spotify's search cannot consistently handle them */
 function stripSingleQuotes(string) {
-    var strippedString = string.replace(/(\w)('\w*')(\w)/g, '$1 $2 $3'); // Twists'n'Turns => Twists 'n' Turns;
+    var strippedString = string.replace(/(\w)('\w')(\w)/g, '$1 $2 $3'); // Twists'n'Turns => Twists 'n' Turns;
     strippedString = strippedString.replace(/'/g, '')
     return strippedString;
 }
