@@ -170,9 +170,10 @@ function artist(name, releases) {
     this.releases = releases;
 }
 
-function multipleMatch(release, matches) {
+function multipleMatch(release, matches, totalMatchCount) {
     this.release = release;
     this.matches = matches;
+    this.totalMatchCount = totalMatchCount;
 }
 
 
@@ -443,6 +444,7 @@ function exportMultipleMatches() {
         multipleMatches.splice(0, 1);
 
         $('#bestMatchHeader').empty();
+        $('#bestMatchDetails').empty();
         $('#spotifyDiv').empty();
 
         var release = match.release;
@@ -450,6 +452,13 @@ function exportMultipleMatches() {
 
 
         $('#bestMatchHeader').html("<h4 class='modal-title'>Choose the best match for <b>" + release.title + "</b> by " + release.artistName + yearString + "</h4>");
+        var matchDetails = 'There are ' + match.totalMatchCount + ' possible matches on Spotify. ';
+        var searchLimit = 50;
+        if (match.totalMatchCount > searchLimit) {
+            matchDetails = matchDetails.concat('Here are the first ' + searchLimit + '. ');
+        }
+        matchDetails = matchDetails.concat('Please choose from the list below:');
+        $('#bestMatchDetails').html(matchDetails);
 
         var matches = match.matches;
 
@@ -548,7 +557,8 @@ function searchReleaseOnSpotify(release) {
         data: {
             q: query,
             type: 'album',
-            market: userCountry
+            market: userCountry,
+            limit: 50
         },
         type: "GET",
         success: function (result) {
@@ -578,9 +588,10 @@ function handleResultFromSpotify(result, release) {
 
     //Possible matches
     var items = result.albums.items;
+    var total = result.albums.total;
 
     //nothing found
-    if (items.length === 0) {
+    if (total === 0) {
         withoutMatches.push(release);
         return;
     }
@@ -611,7 +622,7 @@ function handleResultFromSpotify(result, release) {
     });
 
     //One and only match - hope it's the right one
-    if (!done && items.length === 1) {
+    if (!done && total === 1) {
 
         done = true;
         var album = items[0];
@@ -629,9 +640,9 @@ function handleResultFromSpotify(result, release) {
     }
 
     //More than one possible match - let the user decide
-    if (!done && items.length > 1) {
+    if (!done && total > 1) {
 
-        var m = new multipleMatch(release, items);
+        var m = new multipleMatch(release, items, total);
         multipleMatches.push(m);
 
         done = true;
