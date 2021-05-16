@@ -226,8 +226,8 @@ function getCollection(userName, page, getWantlist) {
         url: url,
         type: "GET",
         crossDomain: true,
-        data: { 
-            sort: "artist", 
+        data: {
+            sort: "artist",
             sort_order: "asc"
         },
         success: function (result) {
@@ -520,14 +520,13 @@ function searchReleaseOnSpotify(release) {
 
     var rArtist = release.artistName;
     if (rArtist) {
-        rArtist = rArtist.replace(/'/g, ''); // there is a bug in spotify's search, apparently
+        rArtist = stripSingleQuotes(rArtist);
     }
     var rTitle = release.title;
-    var formatSuffixes = ['EP', 'E.P.', 'E.P', 'LP', 'L.P.',' L.P']
+    var formatSuffixes = ['EP', 'E.P.', 'E.P', 'LP', 'L.P.',' L.P'];
 
     if (rTitle) {
-     	rTitle = rTitle.replace('\'n\'', ' n '); // Twists'n'Turns => Twists n Turns
-        rTitle = rTitle.replace(/'/g, '');
+        rTitle = stripSingleQuotes(rTitle);
         for (var i = 0; i < formatSuffixes.length; i++) {
             // ensure there is a leading space, so that potential acronym titles ("W.E.L.P.") do not get filtered out
             // this also prevents issues with releases such as "L.P." by "The Rembrandts"
@@ -681,7 +680,6 @@ function saveAlbumToPlaylist(albumID, imageURL) {
 
 }
 
-
 /** Saves tracks to the playlist */
 function saveAlbumTracks(tracks) {
 
@@ -725,6 +723,12 @@ function saveAlbumTracks(tracks) {
     });
 }
 
+/** strips single quotes because Spotify's search cannot consistently handle them */
+function stripSingleQuotes(string) {
+    var strippedString = string.replace(/(\w)('\w')(\w)/g, '$1 $2 $3'); // Twists'n'Turns => Twists 'n' Turns;
+    strippedString = strippedString.replace(/'/g, '')
+    return strippedString;
+}
 
 /** Gets parameters from the hash of the URL */
 function getHashParams() {
