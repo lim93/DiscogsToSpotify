@@ -158,6 +158,8 @@ var adedArtistCount = 0;
 //How many artists are in the user's collection in total?
 var totalArtists = 0;
 
+//regex that checks if a release might be a two-track vinyl single
+var singleTitleRegex = new RegExp(/^([^\/]*)\s\/\s[^\/]*$/);
 
 function releaseObject(title, artistName, year) {
     this.title = title;
@@ -536,6 +538,7 @@ function searchReleaseOnSpotify(release) {
 
     if (rTitle) {
         rTitle = stripSingleQuotes(rTitle);
+        rTitle = stripBSide(rTitle);
         for (var i = 0; i < formatSuffixes.length; i++) {
             // ensure there is a leading space, so that potential acronym titles ("W.E.L.P.") do not get filtered out
             // this also prevents issues with releases such as "L.P." by "The Rembrandts"
@@ -732,6 +735,16 @@ function saveAlbumTracks(tracks) {
         },
         async: false
     });
+}
+
+/** checks if the release is most likely a single, if so, it returns only the a side title */
+function stripBSide(string) {
+    var couldBeASingle = singleTitleRegex.test(string);
+    if (couldBeASingle === false) {
+        return string;
+    }
+    var strippedString = singleTitleRegex.exec(string)[1].trim();
+    return strippedString;
 }
 
 /** strips single quotes because Spotify's search cannot consistently handle them */
